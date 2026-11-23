@@ -1,0 +1,31 @@
+# Render Blueprint - deploys the PromptGuard FastAPI backend (API + server-rendered UI).
+# Render dashboard -> New -> Blueprint -> select this repository.
+services:
+  - type: web
+    name: promptguard-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # --proxy-headers + FORWARDED_ALLOW_IPS make FastAPI see the real https scheme
+    # behind Render's proxy, so url_for() emits https links (no mixed-content errors).
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: PROMPTGUARD_MODE
+        value: ENFORCE
+      - key: PROMPTGUARD_LLM_PROVIDER
+        value: mock
+      # SQLite event log. Render's free disk is ephemeral, so logs reset on each deploy/restart.
+      - key: PROMPTGUARD_DB_PATH
+        value: /tmp/promptguard/promptguard.db
+      # Only needed if you switch PROMPTGUARD_LLM_PROVIDER to openai / anthropic
+      # (and add the matching package to requirements.txt). Set the values in the dashboard.
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
