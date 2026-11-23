@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}About / Architecture{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+  <div class="eyebrow">System architecture</div>
+  <h2>About PromptGuard</h2>
+  <p>PromptGuard is an independent, educational AI security firewall that protects LLM applications from direct and indirect prompt injection. It combines two separate security ideas: <b>detection</b> (does this input look malicious?) and <b>capability control</b> (even if a malicious instruction reaches the model, what is the model actually allowed to do?).</p>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Request flow</h3>
+    <div class="flow" aria-label="PromptGuard architecture">
+      <div class="node">User / Untrusted Document</div><div class="arrow">▼</div>
+      <div class="node detect">Input Gateway (size limits)</div><div class="arrow">▼</div>
+      <div class="node detect">Normalizer (original preserved)</div><div class="arrow">▼</div>
+      <div class="branch">
+        <div class="node detect" style="min-width:0">Pattern Engine</div>
+        <div class="node detect" style="min-width:0">Heuristics</div>
+        <div class="node detect" style="min-width:0">Encoding Scanner</div>
+        <div class="node detect" style="min-width:0">Unicode Scanner</div>
+      </div><div class="arrow">▼</div>
+      <div class="node detect">Context Analysis (discuss vs perform)</div><div class="arrow">▼</div>
+      <div class="node detect">Risk Scoring (0–100, explainable)</div><div class="arrow">▼</div>
+      <div class="node">Policy Engine → BLOCK / WARN / SANITIZE / ALLOW</div><div class="arrow">▼</div>
+      <div class="node control">Provenance Layer (taint + nonce fences)</div><div class="arrow">▼</div>
+      <div class="node">LLM (MockLLM / optional provider)</div><div class="arrow">▼</div>
+      <div class="node control">Tool Authorization Firewall</div><div class="arrow">▼</div>
+      <div class="node control">Output Leakage Firewall</div><div class="arrow">▼</div>
+      <div class="node">User</div>
+    </div>
+    <div class="legend-row">
+      <span><span class="legend-swatch" style="border-color:rgba(57,135,229,.8)"></span>Detection layer</span>
+      <span><span class="legend-swatch" style="border-color:rgba(236,131,90,.8)"></span>Capability-control layer</span>
+    </div>
+  </div>
+
+  <div class="card stack">
+    <div>
+      <h3>Defense in depth</h3>
+      <p class="small">No detector catches every prompt injection - it is an adversarial problem, and paraphrased or novel attacks can bypass rules. PromptGuard therefore layers independent controls so that a miss in one layer can be caught by another.</p>
+    </div>
+    <div>
+      <h3>Operating modes</h3>
+      <ul class="small">
+        <li><b>LEARNING</b> - detect and log only; nothing is blocked.</li>
+        <li><b>MONITOR</b> - detect and warn; blocks are downgraded to warnings.</li>
+        <li><b>ENFORCE</b> - full policy: ALLOW / WARN / SANITIZE / BLOCK.</li>
+      </ul>
+      <p class="small muted">Modes affect the input detector only. The tool firewall and output firewall are always enforced: detection is tunable, capability control is not.</p>
+    </div>
+    <div>
+      <h3>Trust model (provenance)</h3>
+      <p class="small">
+        <span class="tag trusted">TRUSTED_SYSTEM</span><span class="tag trusted">USER_INPUT</span>
+        <span class="tag untrusted">UNTRUSTED_DOCUMENT</span><span class="tag untrusted">EXTERNAL_CONTENT</span><span class="tag untrusted">TOOL_OUTPUT</span>
+      </p>
+      <p class="small">Untrusted content is wrapped in nonce-keyed fences and treated as DATA. Anything derived from it stays tainted. Sensitive tools cannot be triggered by tainted content.</p>
+    </div>
+    <div>
+      <h3>Reference</h3>
+      <p class="small">Inspired by the concepts in the <a href="https://github.com/CarterPerez-dev/Cybersecurity-Projects/tree/main/PROJECTS/beginner/prompt-injection-firewall" rel="noopener" target="_blank">prompt-injection-firewall</a> project (CarterPerez-dev/Cybersecurity-Projects). PromptGuard is an independent reimplementation; no source code was copied.</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title"><h3>Detection rules ({{ rules|length }})</h3><a href="/api/rules" class="small">JSON</a></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Rule ID</th><th>Name</th><th>Category</th><th>Severity</th><th class="num">Weight</th><th>Description</th></tr></thead>
+      <tbody>
+        {% for r in rules %}
+        <tr>
+          <td class="mono">{{ r.rule_id }}</td>
+          <td>{{ r.name }}</td>
+          <td class="mono small">{{ r.category }}</td>
+          <td><span class="badge sev-{{ r.severity }}">{{ r.severity }}</span></td>
+          <td class="num">{{ r.weight }}</td>
+          <td class="small">{{ r.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

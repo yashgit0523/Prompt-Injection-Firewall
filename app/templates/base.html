@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}PromptGuard{% endblock %} · PromptGuard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fonts are optional: the UI falls back to system fonts when offline. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2300ff41' d='M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5z'/%3E%3C/svg%3E">
+</head>
+<body>
+  <!-- Icon sprite (Lucide-style strokes). Icons are decorative; text labels carry meaning. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7 15h10"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m6 3 14 9-14 9z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="PromptGuard dashboard">
+      <span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span>
+      <span>
+        <div class="brand-name">PROMPTGUARD</div>
+        <div class="brand-sub">AI PROMPT INJECTION FIREWALL</div>
+      </span>
+    </a>
+    <div class="status-strip" id="status-strip" aria-live="polite">
+      <span class="status-chip" id="sys-status"><span class="pulse"></span><span id="sys-status-text">CONNECTING…</span></span>
+      <span class="status-chip" title="Operating mode (PROMPTGUARD_MODE)">MODE <b id="sys-mode">{{ mode }}</b></span>
+      <span class="status-chip optional" title="Enabled detection rules">RULES <b id="sys-rules">–</b></span>
+      <span class="status-chip optional" title="LLM provider">LLM <b id="sys-llm">–</b></span>
+    </div>
+  </header>
+  <nav class="nav" aria-label="Main">
+    <a href="/" class="{{ 'active' if active == 'dashboard' }}" {{ 'aria-current=page' if active == 'dashboard' }}><svg class="icon" aria-hidden="true"><use href="#i-dashboard"/></svg>Dashboard</a>
+    <a href="/scanner" class="{{ 'active' if active == 'scanner' }}" {{ 'aria-current=page' if active == 'scanner' }}><svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>Prompt Scanner</a>
+    <a href="/documents" class="{{ 'active' if active == 'documents' }}" {{ 'aria-current=page' if active == 'documents' }}><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>Document Scanner</a>
+    <a href="/demo" class="{{ 'active' if active == 'demo' }}" {{ 'aria-current=page' if active == 'demo' }}><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Attack Demo Lab</a>
+    <a href="/events" class="{{ 'active' if active == 'events' }}" {{ 'aria-current=page' if active == 'events' }}><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg>Security Events</a>
+    <a href="/about" class="{{ 'active' if active == 'about' }}" {{ 'aria-current=page' if active == 'about' }}><svg class="icon" aria-hidden="true"><use href="#i-cpu"/></svg>Architecture</a>
+    <a href="/docs"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>API Docs</a>
+  </nav>
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+  <footer>PROMPTGUARD // independent educational implementation of prompt-injection firewall concepts · defensive use only · all secrets shown are fake demo canaries</footer>
+  <script src="{{ url_for('static', path='js/common.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

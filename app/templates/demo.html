@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Attack Demo Lab{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Live-fire simulation</div>
+    <h2>Attack Demo Lab</h2>
+    <p>Pick a scenario. Its synthetic payload is loaded, sent through the complete firewall pipeline, and every security stage is shown in order. All payloads target only PromptGuard's MockLLM, simulated tools and fake canary.</p>
+  </div>
+  <div class="legend-row" style="margin:0">
+    <span><span class="legend-swatch" style="background:var(--good);border-color:var(--good)"></span>Benign control</span>
+    <span><span class="legend-swatch" style="background:var(--critical);border-color:var(--critical)"></span>Attack scenario</span>
+  </div>
+</div>
+
+<div class="demo-grid" id="demo-grid"></div>
+
+<div id="demo-panel" class="stack hidden" style="margin-top:1.25rem">
+  <div class="card">
+    <div class="card-title">
+      <h2 id="demo-title" style="margin:0"></h2>
+      <span class="tag" id="demo-category"></span>
+    </div>
+    <p id="demo-description" style="margin:0 0 0.8rem"></p>
+    <div class="grid grid-2">
+      <div>
+        <label class="field-label">Synthetic input (user prompt)</label>
+        <div class="box" id="demo-prompt"></div>
+      </div>
+      <div id="demo-doc-wrap" class="hidden">
+        <label class="field-label">Untrusted document <span class="tag untrusted">UNTRUSTED_DOCUMENT</span></label>
+        <div class="box" id="demo-doc"></div>
+      </div>
+    </div>
+    <div class="why" style="margin-top:0.9rem">
+      <div class="why-title">EXPECTED OUTCOME</div>
+      <div id="demo-expected"></div>
+      <div class="muted small" id="demo-talking" style="margin-top:0.35rem"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-hero">
+    <div class="card sticky-panel" style="display:flex;flex-direction:column;align-items:center;gap:.5rem">
+      <h3 style="align-self:flex-start">Threat score</h3>
+      <div id="demo-gauge"><span class="spinner"></span></div>
+      <div id="demo-final" class="verdict-headline" aria-live="polite"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><h3>Security pipeline</h3><span id="demo-status" class="muted small" aria-live="polite"></span></div>
+      <ol class="stages" id="demo-stages"></ol>
+    </div>
+  </div>
+
+  <div id="demo-result" class="stack"></div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='js/demo.js') }}"></script>{% endblock %}

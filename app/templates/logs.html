@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Security Events{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Forensics</div>
+    <h2>Security Events</h2>
+    <p>Every request processed by PromptGuard. Secrets are redacted before storage. Click a row (or press Enter on it) to open the Request Inspector.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="btn-row" style="margin-top:0">
+    <label class="small muted" for="f-severity">Severity</label>
+    <select id="f-severity">
+      <option value="">All</option>
+      <option>SAFE</option><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
+    </select>
+    <label class="small muted" for="f-category">Attack category</label>
+    <select id="f-category">
+      <option value="">All</option>
+      <option>DIRECT_INJECTION</option><option>INSTRUCTION_OVERRIDE</option><option>SYSTEM_PROMPT_EXTRACTION</option>
+      <option>ROLE_HIJACKING</option><option>JAILBREAK</option><option>DATA_EXFILTRATION</option>
+      <option>DELIMITER_INJECTION</option><option>TOOL_MANIPULATION</option><option>ENCODED_INJECTION</option>
+      <option>INDIRECT_INJECTION</option><option>UNICODE_SMUGGLING</option>
+    </select>
+    <label class="small muted" for="f-decision">Decision</label>
+    <select id="f-decision">
+      <option value="">All</option><option>ALLOW</option><option>WARN</option><option>SANITIZE</option><option>BLOCK</option>
+    </select>
+    <button class="btn" id="refresh-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>Refresh</button>
+    <span id="count" class="muted small"></span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Time</th><th>Event ID</th><th>Source</th><th class="num">Risk</th><th>Severity</th><th>Attack type</th><th>Decision</th><th>Tool</th><th>Output</th></tr>
+      </thead>
+      <tbody id="events-body"></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='js/logs.js') }}"></script>{% endblock %}

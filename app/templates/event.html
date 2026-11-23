@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Request Inspector{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a href="/events" class="small">← Security Events</a>
+    <div class="eyebrow" style="margin-top:.5rem">Request inspector</div>
+    <h2>Event <span class="mono" style="font-size:1rem;color:var(--cyan)">{{ event_id }}</span></h2>
+    <p>Everything the firewall saw and decided for this request, layer by layer.</p>
+  </div>
+</div>
+<div id="inspector" class="stack reveal" data-event-id="{{ event_id }}"><span class="spinner"></span> Loading…</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='js/event.js') }}"></script>{% endblock %}

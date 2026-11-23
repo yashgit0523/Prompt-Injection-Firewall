@@ -1,0 +1,21 @@
+services:
+  promptguard:
+    build: .
+    image: promptguard:latest
+    container_name: promptguard
+    ports:
+      - "8000:8000"
+    environment:
+      PROMPTGUARD_MODE: ${PROMPTGUARD_MODE:-ENFORCE}
+      PROMPTGUARD_LLM_PROVIDER: ${PROMPTGUARD_LLM_PROVIDER:-mock}
+      PROMPTGUARD_OUTPUT_LEAK_ACTION: ${PROMPTGUARD_OUTPUT_LEAK_ACTION:-BLOCK}
+      PROMPTGUARD_DB_PATH: /app/data/promptguard.db
+      # Optional real providers - never hardcode keys; pass them from your shell or a .env file.
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - promptguard-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  promptguard-data:
