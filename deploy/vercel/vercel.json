@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "https://promptguard-api.onrender.com/$1"
+      "destination": "https://promptguard-api-u3xj.onrender.com/$1"
     }
   ]
 }
