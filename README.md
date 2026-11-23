@@ -10,6 +10,9 @@ concepts and by the
 [prompt-injection-firewall](https://github.com/CarterPerez-dev/Cybersecurity-Projects/tree/main/PROJECTS/beginner/prompt-injection-firewall)
 project in CarterPerez-dev/Cybersecurity-Projects. No source code was copied. All concepts were reimplemented.
 
+**Live demo:** <https://promptguard-api-u3xj.onrender.com/> · API docs: <https://promptguard-api-u3xj.onrender.com/docs>
+(free Render instance: the first request after it has been idle can take 30-60 seconds while it wakes up).
+
 ---
 
 ## 1. Overview
@@ -227,6 +230,8 @@ pytest · Docker / Docker Compose (optional). No paid API required.
 ├── datasets/test_prompts.json  # 86 labelled synthetic samples
 ├── scripts/evaluate.py         # security evaluation
 ├── docs/                       # ARCHITECTURE.md, METHODOLOGY.md, THREAT_MODEL.md
+├── deploy/vercel/vercel.json   # Vercel proxy to the Render backend
+├── render.yaml  DEPLOYMENT.md  # Render blueprint + deployment guide
 ├── requirements.txt  .env.example  Dockerfile  docker-compose.yml  pytest.ini
 ```
 
@@ -264,6 +269,18 @@ docker compose up --build
 The dashboard is then at <http://localhost:8000/>. Event data is persisted in the `promptguard-data` volume.
 To use a real model: `PROMPTGUARD_LLM_PROVIDER=anthropic ANTHROPIC_API_KEY=... docker compose up` (install the SDK
 first if running locally: `pip install anthropic` or `pip install openai`).
+
+### Cloud deployment (Render + Vercel)
+
+The app is deployed without any code changes:
+
+* **Render** runs the FastAPI app (API + server-rendered UI) from [`render.yaml`](render.yaml).
+  Live at <https://promptguard-api-u3xj.onrender.com/>. Health check: `/api/health`.
+* **Vercel** serves the public frontend URL and proxies every route to Render through
+  [`deploy/vercel/vercel.json`](deploy/vercel/vercel.json). Set the Vercel project's Root Directory to `deploy/vercel`.
+
+On Render's free plan the SQLite event log resets on each redeploy or restart. Step-by-step instructions,
+environment variables and troubleshooting are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## 19. Dashboard
 
