@@ -1,26 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Prompt Scanner{% endblock %}
+{% block title %}Prompt scanner{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-    <div class="eyebrow">Input firewall</div>
-    <h2>Prompt Scanner</h2>
-    <p><b>Analyze</b> runs only the detection layers; nothing is sent to the LLM. <b>Send through firewall</b> runs the complete pipeline: input firewall → provenance → MockLLM → tool firewall → output firewall.</p>
+    <h2>Prompt scanner</h2>
+    <p>Analyze runs the detection layers only, so nothing reaches the model. Send through firewall runs the whole pipeline, from the input firewall to the model, the tool firewall and the output firewall</p>
   </div>
 </div>
 
 <div class="card">
-  <label class="field-label" for="prompt">Enter prompt</label>
-  <textarea id="prompt" placeholder="> type or paste a prompt…"></textarea>
+  <label class="field-label" for="prompt">Prompt</label>
+  <textarea id="prompt" placeholder="Paste or type a prompt"></textarea>
   <div class="chips" id="samples" aria-label="Sample prompts"></div>
   <div class="btn-row">
-    <button class="btn" id="analyze-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>Analyze prompt</button>
+    <button class="btn" id="analyze-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>Analyze</button>
     <button class="btn primary" id="send-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Send through firewall</button>
     <span id="status" class="muted small" aria-live="polite"></span>
+    <span class="small muted" style="margin-left:auto">Ctrl + Enter to analyze</span>
   </div>
-  <p class="small muted" style="margin:.6rem 0 0">Tip: Ctrl + Enter analyzes the prompt.</p>
 </div>
 
-<div id="result" class="stack reveal" style="margin-top:1rem"></div>
+<div id="result" class="stack section"></div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', path='js/scanner.js') }}"></script>{% endblock %}

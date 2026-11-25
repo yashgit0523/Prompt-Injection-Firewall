@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Document Scanner{% endblock %}
+{% block title %}Document scanner{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-    <div class="eyebrow">Indirect injection defense</div>
-    <h2>Document Scanner</h2>
-    <p>Paste content the user did <b>not</b> write, such as a web page, e-mail or uploaded file. It is labelled <code>UNTRUSTED_DOCUMENT</code>: it may contain data, but it may never give instructions. Suspicious segments are highlighted and can be removed (SANITIZE) before the LLM sees the document.</p>
+    <h2>Document scanner</h2>
+    <p>Content the user did not write, like a web page, an email or an uploaded file, is labelled UNTRUSTED_DOCUMENT. It may contain data but never instructions. Suspicious sentences are marked and can be removed before the model reads the document</p>
   </div>
 </div>
 
@@ -13,22 +12,21 @@
   <div class="card">
     <label class="field-label" for="user-request">User request</label>
     <input type="text" id="user-request" value="Summarize this document.">
-    <label class="field-label" for="document" style="margin-top:1rem">Document content <span class="tag untrusted">UNTRUSTED_DOCUMENT</span></label>
-    <textarea id="document" style="min-height:260px" placeholder="> paste untrusted document content…"></textarea>
+    <label class="field-label" for="document" style="margin-top:16px">Document content</label>
+    <textarea id="document" style="min-height:256px" placeholder="Paste untrusted document content"></textarea>
     <div class="chips" id="doc-samples" aria-label="Sample documents"></div>
     <div class="btn-row">
       <button class="btn" id="scan-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>Scan document</button>
-      <button class="btn primary" id="scan-llm-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Scan + run pipeline</button>
+      <button class="btn primary" id="scan-llm-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg>Scan and run pipeline</button>
       <span id="status" class="muted small" aria-live="polite"></span>
     </div>
   </div>
   <div class="card">
-    <h3>Document view</h3>
-    <div class="untrusted-banner"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span>SOURCE: UNTRUSTED_DOCUMENT · DATA ONLY · NOT INSTRUCTIONS</span></div>
-    <div id="doc-view" class="box doc-view" style="max-height:440px"><span class="muted">Scan a document to see highlighted suspicious segments.</span></div>
+    <div class="card-title"><h3>Document view</h3><span class="tag untrusted">UNTRUSTED_DOCUMENT</span></div>
+    <div id="doc-view" class="box doc-view" style="max-height:440px"><span class="muted">Scan a document to mark its suspicious sentences</span></div>
   </div>
 </div>
 
-<div id="result" class="stack reveal" style="margin-top:1rem"></div>
+<div id="result" class="stack section"></div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', path='js/documents.js') }}"></script>{% endblock %}

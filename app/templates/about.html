@@ -1,85 +1,84 @@
 {% extends "base.html" %}
-{% block title %}About / Architecture{% endblock %}
+{% block title %}Architecture{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-  <div class="eyebrow">System architecture</div>
-  <h2>About PromptGuard</h2>
-  <p>PromptGuard is an independent, educational AI security firewall that protects LLM applications from direct and indirect prompt injection. It combines two separate security ideas: <b>detection</b> (does this input look malicious?) and <b>capability control</b> (even if a malicious instruction reaches the model, what is the model actually allowed to do?).</p>
+    <h2>Architecture</h2>
+    <p>PromptGuard protects LLM applications from direct and indirect prompt injection with two separate ideas. Detection asks whether an input looks malicious. Capability control asks what the model is allowed to do if a malicious instruction reaches it anyway</p>
   </div>
 </div>
 
 <div class="grid grid-2">
   <div class="card">
     <h3>Request flow</h3>
-    <div class="flow" aria-label="PromptGuard architecture">
-      <div class="node">User / Untrusted Document</div><div class="arrow">▼</div>
-      <div class="node detect">Input Gateway (size limits)</div><div class="arrow">▼</div>
-      <div class="node detect">Normalizer (original preserved)</div><div class="arrow">▼</div>
+    <div class="flow" aria-label="PromptGuard request flow">
+      <div class="node">User or untrusted document</div><div class="arrow">↓</div>
+      <div class="node detect">Input gateway, size limits</div><div class="arrow">↓</div>
+      <div class="node detect">Normalizer, original kept</div><div class="arrow">↓</div>
       <div class="branch">
-        <div class="node detect" style="min-width:0">Pattern Engine</div>
+        <div class="node detect" style="min-width:0">Patterns</div>
         <div class="node detect" style="min-width:0">Heuristics</div>
-        <div class="node detect" style="min-width:0">Encoding Scanner</div>
-        <div class="node detect" style="min-width:0">Unicode Scanner</div>
-      </div><div class="arrow">▼</div>
-      <div class="node detect">Context Analysis (discuss vs perform)</div><div class="arrow">▼</div>
-      <div class="node detect">Risk Scoring (0–100, explainable)</div><div class="arrow">▼</div>
-      <div class="node">Policy Engine → BLOCK / WARN / SANITIZE / ALLOW</div><div class="arrow">▼</div>
-      <div class="node control">Provenance Layer (taint + nonce fences)</div><div class="arrow">▼</div>
-      <div class="node">LLM (MockLLM / optional provider)</div><div class="arrow">▼</div>
-      <div class="node control">Tool Authorization Firewall</div><div class="arrow">▼</div>
-      <div class="node control">Output Leakage Firewall</div><div class="arrow">▼</div>
+        <div class="node detect" style="min-width:0">Encoding</div>
+        <div class="node detect" style="min-width:0">Unicode</div>
+      </div><div class="arrow">↓</div>
+      <div class="node detect">Context analysis, discuss or perform</div><div class="arrow">↓</div>
+      <div class="node detect">Risk scoring, 0 to 100</div><div class="arrow">↓</div>
+      <div class="node">Policy engine: block, warn, sanitize or allow</div><div class="arrow">↓</div>
+      <div class="node control">Provenance layer, taint and nonce fences</div><div class="arrow">↓</div>
+      <div class="node">Model, mock or optional provider</div><div class="arrow">↓</div>
+      <div class="node control">Tool firewall</div><div class="arrow">↓</div>
+      <div class="node control">Output firewall</div><div class="arrow">↓</div>
       <div class="node">User</div>
     </div>
     <div class="legend-row">
-      <span><span class="legend-swatch" style="border-color:rgba(57,135,229,.8)"></span>Detection layer</span>
-      <span><span class="legend-swatch" style="border-color:rgba(236,131,90,.8)"></span>Capability-control layer</span>
+      <span><span class="legend-swatch" style="background:var(--info)"></span>Detection</span>
+      <span><span class="legend-swatch" style="background:var(--accent)"></span>Capability control</span>
     </div>
   </div>
 
   <div class="card stack">
     <div>
       <h3>Defense in depth</h3>
-      <p class="small">No detector catches every prompt injection - it is an adversarial problem, and paraphrased or novel attacks can bypass rules. PromptGuard therefore layers independent controls so that a miss in one layer can be caught by another.</p>
+      <p class="small" style="color:var(--text-secondary);margin-top:8px">No detector catches every prompt injection. It is an adversarial problem, and reworded or new attacks can get past the rules, so PromptGuard layers independent controls and a miss in one can be caught by another.</p>
     </div>
     <div>
       <h3>Operating modes</h3>
-      <ul class="small">
-        <li><b>LEARNING</b> - detect and log only; nothing is blocked.</li>
-        <li><b>MONITOR</b> - detect and warn; blocks are downgraded to warnings.</li>
-        <li><b>ENFORCE</b> - full policy: ALLOW / WARN / SANITIZE / BLOCK.</li>
+      <ul class="sys-list" style="margin-top:8px">
+        <li><span>LEARNING</span><span>detect and log only</span></li>
+        <li><span>MONITOR</span><span>blocks become warnings</span></li>
+        <li><span>ENFORCE</span><span>full policy</span></li>
       </ul>
-      <p class="small muted">Modes affect the input detector only. The tool firewall and output firewall are always enforced: detection is tunable, capability control is not.</p>
+      <p class="small muted" style="margin-top:8px">Modes only change the input detector. The tool firewall and output firewall are always enforced.</p>
     </div>
     <div>
-      <h3>Trust model (provenance)</h3>
-      <p class="small">
+      <h3>Trust model</h3>
+      <p style="margin-top:8px">
         <span class="tag trusted">TRUSTED_SYSTEM</span><span class="tag trusted">USER_INPUT</span>
         <span class="tag untrusted">UNTRUSTED_DOCUMENT</span><span class="tag untrusted">EXTERNAL_CONTENT</span><span class="tag untrusted">TOOL_OUTPUT</span>
       </p>
-      <p class="small">Untrusted content is wrapped in nonce-keyed fences and treated as DATA. Anything derived from it stays tainted. Sensitive tools cannot be triggered by tainted content.</p>
+      <p class="small" style="color:var(--text-secondary)">Untrusted content is wrapped in nonce-keyed fences and treated as data. Anything derived from it stays tainted, and tainted content cannot trigger sensitive tools.</p>
     </div>
     <div>
       <h3>Reference</h3>
-      <p class="small">Inspired by the concepts in the <a href="https://github.com/CarterPerez-dev/Cybersecurity-Projects/tree/main/PROJECTS/beginner/prompt-injection-firewall" rel="noopener" target="_blank">prompt-injection-firewall</a> project (CarterPerez-dev/Cybersecurity-Projects). PromptGuard is an independent reimplementation; no source code was copied.</p>
+      <p class="small" style="color:var(--text-secondary);margin-top:8px">Inspired by the concepts in the <a href="https://github.com/CarterPerez-dev/Cybersecurity-Projects/tree/main/PROJECTS/beginner/prompt-injection-firewall" rel="noopener" target="_blank">prompt-injection-firewall</a> project by CarterPerez-dev. PromptGuard is an independent reimplementation and no source code was copied.</p>
     </div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-title"><h3>Detection rules ({{ rules|length }})</h3><a href="/api/rules" class="small">JSON</a></div>
+<div class="card section">
+  <div class="card-title"><h3>Detection rules</h3><span class="card-sub">{{ rules|length }} rules · <a href="/api/rules">JSON</a></span></div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Rule ID</th><th>Name</th><th>Category</th><th>Severity</th><th class="num">Weight</th><th>Description</th></tr></thead>
+      <thead><tr><th>Rule</th><th>Name</th><th>Category</th><th>Severity</th><th class="num">Weight</th><th>Description</th></tr></thead>
       <tbody>
         {% for r in rules %}
         <tr>
-          <td class="mono">{{ r.rule_id }}</td>
+          <td class="mono nowrap">{{ r.rule_id }}</td>
           <td>{{ r.name }}</td>
           <td class="mono small">{{ r.category }}</td>
-          <td><span class="badge sev-{{ r.severity }}">{{ r.severity }}</span></td>
+          <td><span class="badge sev-{{ r.severity }}">{{ r.severity|capitalize }}</span></td>
           <td class="num">{{ r.weight }}</td>
-          <td class="small">{{ r.description }}</td>
+          <td class="small" style="color:var(--text-secondary)">{{ r.description }}</td>
         </tr>
         {% endfor %}
       </tbody>

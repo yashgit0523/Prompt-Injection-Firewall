@@ -1,31 +1,31 @@
 "use strict";
 (() => {
-  const { api, el, badge, card, fmtTime, renderAnalysis, renderStages, renderChat, renderDocScan } = PG;
+  const { api, el, badge, fmtTime, scoreBlock, trace, renderAnalysis, renderStages, renderChat, renderDocScan } = PG;
   const root = document.getElementById("inspector");
   const eventId = root.dataset.eventId;
 
   function summaryCard(e) {
-    const row = (label, value) => el("tr", {}, el("th", { text: label, style: "width:220px" }), el("td", {}, value));
-    return card("Event summary", el("div", { class: "table-wrap" }, el("table", {}, el("tbody", {},
-      row("Event ID", el("span", { class: "mono", text: e.id })),
-      row("Timestamp", fmtTime(e.created_at)),
-      row("Event type", e.event_type + (e.scenario ? ` (demo scenario: ${e.scenario})` : "")),
-      row("Source / provenance", e.source),
-      row("Mode", e.mode),
-      row("Final threat score", el("b", { text: `${e.risk_score} / 100` })),
-      row("Severity", badge("sev", e.severity)),
-      row("Policy decision", badge("dec", e.decision)),
-      row("Tool security result", badge("tool", e.tool_decision)),
-      row("Output security result", badge("out", e.output_decision)),
-      row("Processing time", `${e.processing_ms} ms`),
-      row("Explanation", e.explanation),
-    ))));
+    const row = (label, value) => el("li", {}, el("span", { text: label }), el("span", {}, value));
+    return el("div", { class: "card" },
+      el("div", { class: "verdict" },
+        scoreBlock(e.risk_score, e.severity, "Final threat score"),
+        el("div", {},
+          el("ul", { class: "sys-list" },
+            row("Time", fmtTime(e.created_at)),
+            row("Event type", e.event_type + (e.scenario ? ` · ${e.scenario.replace(/_/g, " ")}` : "")),
+            row("Source", e.source),
+            row("Mode", e.mode),
+            row("Policy decision", badge("dec", e.decision)),
+            row("Tool firewall", badge("tool", e.tool_decision)),
+            row("Output firewall", badge("out", e.output_decision)),
+            row("Processing time", `${e.processing_ms} ms`)))),
+      el("div", { class: "why" }, el("div", { class: "why-title", text: "Explanation" }), el("div", { text: e.explanation })));
   }
 
   function stagesCard(stages) {
     const list = el("ol", { class: "stages" });
     renderStages(list, stages, false);
-    return card("Pipeline stages", list);
+    return el("div", { class: "card" }, el("div", { class: "card-title" }, el("h3", { text: "Pipeline stages" }), trace(stages, true)), list);
   }
 
   async function load() {

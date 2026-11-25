@@ -23,7 +23,10 @@ _TEXT_COLUMNS_TO_REDACT = ("original_input", "normalized_input", "explanation", 
 _SUMMARY_COLUMNS = (
     "id, created_at, event_type, scenario, source, mode, risk_score, severity, decision, categories, "
     "primary_category, tool_decision, tool_blocked_count, output_decision, processing_ms, "
-    "substr(original_input, 1, 160) AS input_preview"
+    "substr(original_input, 1, 160) AS input_preview, "
+    # Stage statuses for the pipeline trace shown next to each event.
+    "COALESCE(json_extract(details, '$.chat.stages'), json_extract(details, '$.analysis.stages'), "
+    "json_extract(details, '$.document_scan.analysis.stages')) AS stages_json"
 )
 
 
@@ -88,6 +91,8 @@ class EventStore:
         for row in rows:
             item = dict(row)
             item["categories"] = json.loads(item["categories"])
+            stages = json.loads(item.pop("stages_json") or "[]")
+            item["trace"] = [{"stage": s.get("stage"), "status": s.get("status")} for s in stages]
             results.append(item)
         return results
 

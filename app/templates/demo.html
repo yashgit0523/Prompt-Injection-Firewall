@@ -1,52 +1,51 @@
 {% extends "base.html" %}
-{% block title %}Attack Demo Lab{% endblock %}
+{% block title %}Attack demo lab{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-    <div class="eyebrow">Live-fire simulation</div>
-    <h2>Attack Demo Lab</h2>
-    <p>Pick a scenario. Its synthetic payload is loaded, sent through the complete firewall pipeline, and every security stage is shown in order. All payloads target only PromptGuard's MockLLM, simulated tools and fake canary.</p>
+    <h2>Attack demo lab</h2>
+    <p>Pick a scenario to load its synthetic payload and send it through the whole firewall, one stage at a time. Payloads only reach PromptGuard's mock model, simulated tools and fake canary</p>
   </div>
   <div class="legend-row" style="margin:0">
-    <span><span class="legend-swatch" style="background:var(--good);border-color:var(--good)"></span>Benign control</span>
-    <span><span class="legend-swatch" style="background:var(--critical);border-color:var(--critical)"></span>Attack scenario</span>
+    <span><span class="legend-swatch" style="background:var(--good)"></span>Benign control</span>
+    <span><span class="legend-swatch" style="background:var(--critical)"></span>Attack</span>
   </div>
 </div>
 
 <div class="demo-grid" id="demo-grid"></div>
 
-<div id="demo-panel" class="stack hidden" style="margin-top:1.25rem">
+<div id="demo-panel" class="stack hidden section">
   <div class="card">
     <div class="card-title">
-      <h2 id="demo-title" style="margin:0"></h2>
+      <h3 id="demo-title" style="font-size:20px;line-height:28px"></h3>
       <span class="tag" id="demo-category"></span>
     </div>
-    <p id="demo-description" style="margin:0 0 0.8rem"></p>
+    <p id="demo-description" style="color:var(--text-secondary);margin-bottom:16px"></p>
     <div class="grid grid-2">
       <div>
-        <label class="field-label">Synthetic input (user prompt)</label>
+        <label class="field-label">Synthetic input</label>
         <div class="box" id="demo-prompt"></div>
       </div>
       <div id="demo-doc-wrap" class="hidden">
-        <label class="field-label">Untrusted document <span class="tag untrusted">UNTRUSTED_DOCUMENT</span></label>
+        <label class="field-label">Untrusted document</label>
         <div class="box" id="demo-doc"></div>
       </div>
     </div>
-    <div class="why" style="margin-top:0.9rem">
-      <div class="why-title">EXPECTED OUTCOME</div>
+    <div class="why">
+      <div class="why-title">Expected outcome</div>
       <div id="demo-expected"></div>
-      <div class="muted small" id="demo-talking" style="margin-top:0.35rem"></div>
+      <div class="small muted" id="demo-talking" style="margin-top:4px"></div>
     </div>
   </div>
 
   <div class="grid grid-hero">
-    <div class="card sticky-panel" style="display:flex;flex-direction:column;align-items:center;gap:.5rem">
-      <h3 style="align-self:flex-start">Threat score</h3>
-      <div id="demo-gauge"><span class="spinner"></span></div>
-      <div id="demo-final" class="verdict-headline" aria-live="polite"></div>
+    <div class="card sticky-panel">
+      <div id="demo-score"><span class="spinner"></span></div>
+      <div id="demo-final" class="verdict-headline" style="margin-top:16px" aria-live="polite"></div>
+      <div id="demo-trace" style="margin-top:12px"></div>
     </div>
     <div class="card">
-      <div class="card-title"><h3>Security pipeline</h3><span id="demo-status" class="muted small" aria-live="polite"></span></div>
+      <div class="card-title"><h3>Firewall pipeline</h3><span id="demo-status" class="small muted" aria-live="polite"></span></div>
       <ol class="stages" id="demo-stages"></ol>
     </div>
   </div>

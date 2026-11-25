@@ -1,86 +1,76 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Overview{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-    <div class="eyebrow">Command center</div>
-    <h2>Threat Operations Dashboard</h2>
-    <p>Live view of every request inspected by the firewall - prompts, documents and demo scenarios - read from the SQLite security-event log.</p>
+    <h2>Overview</h2>
+    <p>Every prompt and document the firewall inspected, read from the security event log</p>
   </div>
   <div class="live-bar" aria-live="polite">
-    <span class="status-chip" id="live-chip"><span class="pulse"></span><span id="live-text">LOADING</span></span>
-    <span id="updated-at" class="small muted"></span>
+    <span class="status-chip" id="live-chip"><span class="dot"></span><span id="live-text">Loading</span></span>
+    <span id="updated-at"></span>
     <button class="btn ghost" id="pause-btn" type="button" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg><span>Pause</span></button>
-    <button class="btn ghost" id="refresh-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg><span>Refresh</span></button>
+    <button class="btn" id="refresh-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>Refresh</button>
   </div>
 </div>
 
-<section class="grid grid-hero reveal" aria-label="Threat overview">
-  <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem">
-    <h3 style="align-self:flex-start">Average threat level</h3>
-    <div id="avg-gauge"></div>
-    <div class="small muted" id="avg-caption" style="text-align:center"></div>
-  </div>
-  <div class="grid grid-3 reveal" id="stat-tiles">
-    <div class="card stat" style="--tile:var(--cyan)"><div class="label"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg>Total requests</div><div class="value" id="s-total">–</div><div class="hint">all scanned inputs</div></div>
-    <div class="card stat" style="--tile:var(--warning)"><div class="label"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Threats detected</div><div class="value" id="s-threats">–</div><div class="hint">risk ≥ LOW or capability block</div></div>
-    <div class="card stat" style="--tile:var(--critical)"><div class="label"><svg class="icon" aria-hidden="true"><use href="#i-ban"/></svg>Requests blocked</div><div class="value" id="s-blocked">–</div><div class="hint">never reached the LLM</div></div>
-    <div class="card stat" style="--tile:var(--serious)"><div class="label"><svg class="icon" aria-hidden="true"><use href="#i-wrench"/></svg>Tool calls blocked</div><div class="value" id="s-tools">–</div><div class="hint">by the tool firewall</div></div>
-    <div class="card stat" style="--tile:var(--critical)"><div class="label"><svg class="icon" aria-hidden="true"><use href="#i-eye-off"/></svg>Leakage attempts</div><div class="value" id="s-leaks">–</div><div class="hint">stopped by output firewall</div></div>
-    <div class="card stat" style="--tile:var(--primary)"><div class="label"><svg class="icon" aria-hidden="true"><use href="#i-gauge"/></svg>Average risk</div><div class="value" id="s-avg">–</div><div class="hint">score 0 – 100</div></div>
-  </div>
-</section>
+<div class="reveal">
+  <section class="card stat-strip" aria-label="Key statistics">
+    <div class="stat-cell"><div class="label">Requests</div><div class="value" id="s-total">–</div><div class="hint">prompts, documents and demos</div></div>
+    <div class="stat-cell"><div class="label">Threats detected</div><div class="value" id="s-threats">–</div><div class="hint" id="s-threats-hint">risk 20 or above, or a capability block</div></div>
+    <div class="stat-cell"><div class="label">Blocked</div><div class="value" id="s-blocked">–</div><div class="hint">before the model saw them</div></div>
+    <div class="stat-cell"><div class="label">Tool calls blocked</div><div class="value" id="s-tools">–</div><div class="hint">by the tool firewall</div></div>
+    <div class="stat-cell"><div class="label">Leaks stopped</div><div class="value" id="s-leaks">–</div><div class="hint">by the output firewall</div></div>
+    <div class="stat-cell"><div class="label">Average risk</div><div class="value" id="s-avg">–</div><div class="hint">out of 100</div></div>
+  </section>
 
-<section class="grid grid-3 reveal" style="margin-top:1rem">
-  <div class="card">
-    <div class="card-title"><h3>Severity distribution</h3></div>
-    <div class="bars" id="chart-severity"></div>
-  </div>
-  <div class="card">
-    <div class="card-title"><h3>Policy decisions</h3></div>
-    <div class="bars" id="chart-decision"></div>
-  </div>
-  <div class="card">
-    <div class="card-title"><h3>Risk telemetry · last 30</h3></div>
-    <div class="spark-wrap" id="chart-spark"></div>
-  </div>
-</section>
-
-<section class="card reveal" style="margin-top:1rem">
-  <div class="card-title"><h3>Threat matrix · category × severity</h3><span class="small muted">last 500 events</span></div>
-  <div id="chart-heatmap"></div>
-</section>
-
-<section class="grid grid-2 reveal" style="margin-top:1rem">
-  <div class="card">
-    <div class="card-title"><h3>Attack categories</h3></div>
-    <div class="bars" id="chart-category"></div>
-  </div>
-  <div class="card">
-    <div class="card-title"><h3>Defense layers</h3><span class="tag trusted" id="layers-mode">–</span></div>
-    <ul class="sys-list" id="sys-list"></ul>
-    <div class="layer-list" aria-label="Active defense layers">
-      <span>Normalization</span><span>Pattern engine</span><span>Heuristics</span><span>Encoding scan</span>
-      <span>Unicode scan</span><span>Risk scoring</span><span>Policy engine</span><span>Provenance</span>
-      <span>Tool firewall</span><span>Output firewall</span>
+  <section class="grid grid-main section">
+    <div class="card">
+      <div class="card-title"><h3>Risk score by request</h3><span class="card-sub" id="chart-sub">last 30 requests</span></div>
+      <div class="chart" id="chart-risk"></div>
     </div>
-  </div>
-</section>
+    <div class="card">
+      <div class="card-title"><h3>Attack categories</h3><span class="card-sub">events per category</span></div>
+      <ul class="rank" id="chart-category"></ul>
+    </div>
+  </section>
 
-<section class="card reveal" style="margin-top:1rem">
-  <div class="card-title"><h3>Recent security events</h3><a href="/events" class="small">View all →</a></div>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Time</th><th>Source</th><th class="num">Risk</th><th>Severity</th><th>Attack type</th><th>Decision</th></tr></thead>
-      <tbody id="recent-body"></tbody>
-    </table>
-  </div>
-</section>
+  <section class="grid grid-side section">
+    <div class="card">
+      <div class="share"><div class="share-title">Policy decisions</div><div class="stackbar" id="bar-decision"></div><ul class="legend" id="legend-decision"></ul></div>
+      <div class="share"><div class="share-title">Severity</div><div class="stackbar" id="bar-severity"></div><ul class="legend" id="legend-severity"></ul></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><h3>Threat matrix</h3><span class="card-sub">category by severity, last 500 events</span></div>
+      <div id="chart-heatmap"></div>
+    </div>
+  </section>
+
+  <section class="grid grid-main section">
+    <div class="card">
+      <div class="card-title"><h3>Recent events</h3><a href="/events" class="small">All events</a></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>Source</th><th>Pipeline</th><th class="num">Risk</th><th>Severity</th><th>Decision</th></tr></thead>
+          <tbody id="recent-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><h3>Firewall configuration</h3></div>
+      <ul class="sys-list" id="sys-list"></ul>
+      <div class="layer-list" aria-label="Active defense layers">
+        <span>Normalization</span><span>Patterns</span><span>Heuristics</span><span>Encoding</span><span>Unicode</span>
+        <span>Scoring</span><span>Policy</span><span>Provenance</span><span>Tool firewall</span><span>Output firewall</span>
+      </div>
+    </div>
+  </section>
+</div>
 
 <div class="btn-row">
-  <a class="btn primary" href="/demo"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Open Attack Demo Lab</a>
-  <a class="btn" href="/scanner"><svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>Scan a prompt</a>
-  <button class="btn danger" id="clear-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>Reset event log</button>
+  <a class="btn primary" href="/demo"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Open the attack demo lab</a>
+  <a class="btn" href="/scanner">Scan a prompt</a>
+  <button class="btn danger" id="clear-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>Clear event log</button>
 </div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', path='js/dashboard.js') }}"></script>{% endblock %}

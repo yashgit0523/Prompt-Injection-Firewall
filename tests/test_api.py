@@ -140,7 +140,7 @@ def test_openapi_and_swagger(client):
 @pytest.mark.parametrize("page", ["/", "/scanner", "/documents", "/demo", "/events", "/events/EVT-X", "/about"])
 def test_pages_render(client, page):
     response = client.get(page)
-    assert response.status_code == 200 and "PROMPTGUARD" in response.text
+    assert response.status_code == 200 and "PromptGuard" in response.text
 
 
 def test_static_assets(client):
