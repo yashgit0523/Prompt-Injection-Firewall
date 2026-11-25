@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 from fastapi import APIRouter, Request
@@ -12,6 +13,28 @@ from app.detection.patterns import rules_as_dicts
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent / "templates"))
 router = APIRouter(include_in_schema=False)
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+
+
+def _static_version() -> str:
+    """Short hash of every static file. It changes whenever CSS or JS changes."""
+    digest = hashlib.sha256()
+    for path in sorted(STATIC_DIR.rglob("*")):
+        if path.is_file():
+            digest.update(path.relative_to(STATIC_DIR).as_posix().encode())
+            digest.update(path.read_bytes())
+    return digest.hexdigest()[:10]
+
+
+_ASSET_VERSION = _static_version()
+
+
+def asset(path: str) -> str:
+    """Versioned static URL, so browsers never reuse an outdated cached file after a deploy."""
+    return f"/static/{path}?v={_ASSET_VERSION}"
+
+
+TEMPLATES.env.globals["asset"] = asset
 
 
 def _render(request: Request, template: str, active: str, **context: object) -> HTMLResponse:
